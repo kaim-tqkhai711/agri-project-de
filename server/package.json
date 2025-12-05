@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express-mongo-sanitize": "^2.2.0",
+    "faker": "^6.6.6",
+    "helmet": "^8.1.0"
+  }
+}
