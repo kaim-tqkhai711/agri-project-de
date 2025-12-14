@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+
+// Layouts
+import AdminLayout from "./layouts/AdminLayout";
+
+// Components
+import AuthScreen from "./components/AuthScreen"; // <--- Import AuthScreen
+import ProtectedRoute from "./components/ProtectedRoute"; // <--- Import ProtectedRoute
+
+// Admin Pages
+import Dashboard from "./pages/admin/Dashboard";
+import DataTools from "./pages/admin/DataTools";
+import ProductForm from "./pages/admin/ProductForm";
+
+// Public Pages
+import Home from "./pages/public/Home";
+import ProductDetail from "./pages/public/ProductDetail";
+
+// Component Wrapper để xử lý logic sau khi Login thành công
+const LoginWrapper = () => {
+  const navigate = useNavigate();
+
+  const handleLoginSuccess = (user: any) => {
+    // Điều hướng dựa trên vai trò
+    if (user.role === 'Admin' || user.role === 'FarmOwner') {
+      navigate('/admin'); // Admin vào Dashboard
+    } else {
+      navigate('/'); // User thường về trang chủ
+    }
+  };
+
+  return <AuthScreen onLoginSuccess={handleLoginSuccess} />;
+};
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* --- AUTH ROUTE --- */}
+        <Route path="/login" element={<LoginWrapper />} />
+
+        {/* --- PUBLIC ROUTES --- */}
+        <Route path="/" element={<Home />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+
+        {/* --- PROTECTED ADMIN ROUTES (Đã được bảo vệ) --- */}
+        <Route element={<ProtectedRoute />}>
+           <Route path="/admin" element={<AdminLayout />}>
+             <Route index element={<Dashboard />} />
+             <Route path="tools" element={<DataTools />} />
+             <Route path="create" element={<ProductForm />} />
+             <Route path="edit/:id" element={<ProductForm />} />
+           </Route>
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
