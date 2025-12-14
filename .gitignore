@@ -1,0 +1,19 @@
+# Node
+node_modules/
+package-lock.json
+
+# Env & config
+.env
+
+# Mongo tools
+mongodump.exe
+mongorestore.exe
+
+# Backup & test data
+server/backups/
+qr_test_images/
+server/tests/
+
+# OS
+.DS_Store
+Thumbs.db
